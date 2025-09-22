@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Firebase Testing</title>
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+      import { getDatabase, onValue, ref } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js";
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCqILdkjLGWk6wnDkQgMAh1XQ_bsTQQX-c",
+        authDomain: "aig-ruben38.firebaseapp.com",
+        databaseURL: "https://aig-ruben38-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "aig-ruben38",
+        storageBucket: "aig-ruben38.firebasestorage.app",
+        messagingSenderId: "746993471333",
+        appId: "1:746993471333:web:885bfe55211d224ccd1b8c"
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase()
+      const directory = ref(db, "testsept17")
+
+      function display(pointer){
+        let data = pointer.val()
+        d1.innerText = data["message1"] + " " + data["message2"]
+      }
+
+      onValue(directory, display)
+
+      console.log("aaaaaaaaaaaaaa")
+    </script>
+  </head>
+  <body>
+    <h1>Hello, Firebase</h1>
+    <p>testing page</p>
+    <div id="d1">
+      Message place
+    </div>
+  </body>
+</html>
