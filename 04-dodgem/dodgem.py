@@ -63,6 +63,35 @@ class GameState:
                         substates.append(GameState(new_board,next_player,self))
         return substates
 
+    def get_valid_moves(self,car):
+        valid_moves = []
+        car_coords = self.board[car]
+        if car[0] == "B":
+            # right, up, down
+            directions = [(1,0), (0,-1), (0,1)]
+            for d in directions:
+                new_coords = (car_coords[0]+d[0],car_coords[1]+d[1])
+                if new_coords[0] < 0 or new_coords[0] > 2 or new_coords[1] < 0 or new_coords[1] > 2:
+                    continue
+                if not self.is_tile_free(new_coords):
+                    continue
+                valid_moves.add(new_coords)
+
+                
+        elif car[0] == "R":
+            # left, right, up
+            directions = [(-1,0), (1,0), (0,-1)]
+            for d in directions:
+                new_coords = (car_coords[0]+d[0],car_coords[1]+d[1])
+                if new_coords[0] < 0 or new_coords[0] > 2 or new_coords[1] < 0 or new_coords[1] > 2:
+                    continue
+                if not self.is_tile_free(new_coords):
+                    continue
+                valid_moves.add(new_coords)
+        else:
+            print("Invalid car")
+        return valid_moves
+
     def output(self, i=0):
         inital_board = [["  ","  ","  "],["  ","  ","  "],["  ","  ","  "]]
         for k,v in self.board.items():
