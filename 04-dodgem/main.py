@@ -2,14 +2,16 @@ import pygame
 import dodgem
 
 selected_car = None
+initial_board = {"B1":(0,0),"B2":(0,1),"R1":(1,2),"R2":(2,2)}
+game_state = dodgem.GameState(initial_board,"B")
+
 
 def main():
     pygame.init()
     screen = pygame.display.set_mode((600, 600))
     pygame.display.set_caption("Dodgem")
 
-    initial_board = {"B1":(0,0),"B2":(0,1),"R1":(1,2),"R2":(2,2)}
-    game_state = dodgem.GameState(initial_board,"B")
+
     
     draw_board(screen, game_state.board)
     pygame.display.flip()
@@ -64,11 +66,11 @@ def draw_board(screen, board, selected_car=None):
     
     # Highlight possible moves for selected car
     if selected_car:
-        possible_moves = game_state.get_possible_moves(selected_car, board)
+        possible_moves = game_state.get_valid_moves(selected_car)
         for move in possible_moves:
-            x = move[0] * 200 + 75
-            y = move[1] * 200 + 75
-            pygame.draw.circle(screen, (0, 255, 0), (x, y), 10)
+            x = move[0] * 200 + 50
+            y = move[1] * 200 + 50
+            pygame.draw.ellipse(screen, (0, 255, 0), (x, y, 100, 100), 5)
 
 
 def handle_mouse_click(pos, board):
@@ -77,9 +79,10 @@ def handle_mouse_click(pos, board):
     row = y // 200
     for car, coord in board.items():
         if coord == (col, row):
-            return 
-    if selected_car:
-        pass
+            global selected_car
+            selected_car = car
+            return
+
 
     return None
 

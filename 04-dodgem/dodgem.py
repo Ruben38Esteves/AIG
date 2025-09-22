@@ -75,7 +75,7 @@ class GameState:
                     continue
                 if not self.is_tile_free(new_coords):
                     continue
-                valid_moves.add(new_coords)
+                valid_moves.append(new_coords)
 
                 
         elif car[0] == "R":
@@ -87,7 +87,7 @@ class GameState:
                     continue
                 if not self.is_tile_free(new_coords):
                     continue
-                valid_moves.add(new_coords)
+                valid_moves.append(new_coords)
         else:
             print("Invalid car")
         return valid_moves
