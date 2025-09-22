@@ -92,6 +92,12 @@ class GameState:
             print("Invalid car")
         return valid_moves
 
+    def player_move(self, car, coord):
+       new_board = self.board.copy()
+       new_board[car] = coords
+       next_player: str = "R" if self.current_player == "B" else "B"
+       return GameState(new_board, next_player, self)
+
     def output(self, i=0):
         inital_board = [["  ","  ","  "],["  ","  ","  "],["  ","  ","  "]]
         for k,v in self.board.items():
