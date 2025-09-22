@@ -20,10 +20,11 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                selected_car = handle_mouse_click(event.pos, game_state.board)
+                handle_mouse_click(event.pos, game_state.board)
                 
                 draw_board(screen, game_state.board, selected_car)
                 pygame.display.flip()
+
     pygame.quit()
 
 
@@ -60,6 +61,14 @@ def draw_board(screen, board, selected_car=None):
 
         if car == selected_car:
             pygame.draw.ellipse(screen, (0, 255, 0), rect, 5)
+    
+    # Highlight possible moves for selected car
+    if selected_car:
+        possible_moves = game_state.get_possible_moves(selected_car, board)
+        for move in possible_moves:
+            x = move[0] * 200 + 75
+            y = move[1] * 200 + 75
+            pygame.draw.circle(screen, (0, 255, 0), (x, y), 10)
 
 
 def handle_mouse_click(pos, board):
@@ -70,7 +79,7 @@ def handle_mouse_click(pos, board):
         if coord == (col, row):
             return 
     if selected_car:
-        
+        pass
 
     return None
 
