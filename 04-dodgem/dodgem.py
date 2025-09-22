@@ -92,6 +92,50 @@ class GameState:
             print("Invalid car")
         return valid_moves
 
+    def get_bot_move(self):
+        vis_score = {}
+        path = set()
+        score, best_state = self.minimax(self, 0, path, 0, vis_score)
+        return best_state
+
+    def minimax(self, gs, i, path=None, d=0, vis_score=None):
+        if path is None:
+            path = set()
+        if vis_score is None:
+            vis_score = {}
+
+        if gs in path:  # cycle detected
+            return (0, gs)
+        path.add(gs)
+
+        if gs in vis_score:
+            path.remove(gs)
+            return (vis_score[gs], gs)
+
+        result = gs.is_game_over()
+        if result[0]:
+            score = result[1]-d if result[1] > 0 else result[1]+d
+            vis_score[gs] = score
+            path.remove(gs)
+            return (score, gs)
+
+        if gs.current_player == "B":  # maximizing
+            best_score = (-999, None)
+            for ss in gs.get_substates():
+                candidate = self.minimax(ss, i+1, path, d+1, vis_score)
+                if candidate[0] > best_score[0]:
+                    best_score = (candidate[0], ss)
+        else:  # minimizing
+            best_score = (999, None)
+            for ss in gs.get_substates():
+                candidate = self.minimax(ss, i+1, path, d+1, vis_score)
+                if candidate[0] < best_score[0]:
+                    best_score = (candidate[0], ss)
+
+        vis_score[gs] = best_score[0]
+        path.remove(gs)
+        return best_score
+
     def player_move(self, car, coord):
        new_board = self.board.copy()
        new_board[car] = coords
@@ -146,8 +190,9 @@ class GameState:
 
 
 inital_board = [["B","",""],["B","",""],["","R","R"]]
-ib = {"B1":(0,0),"B2":(0,1),"R1":(1,2),"R2":(2,2)}
+ib = {"B1":(2,0),"B2":(0,1),"R1":(1,2),"R2":(2,2)}
 gs = GameState(ib,"B")
+gs.output()
 
 visited = set()
 
@@ -166,7 +211,7 @@ def print_tree(gs: GameState, indentation: int, depth: int):
 
 
 vis_score = {}
-def minimax(gs: GameState, i: int, path=None, d = 0):
+def minimaxaaaa(gs: GameState, i: int, path=None, d = 0):
     if path is None:
         path = set()
     if gs in path:            # cycle detected
@@ -204,9 +249,5 @@ def minimax(gs: GameState, i: int, path=None, d = 0):
     vis_score[gs] = best_score[0]
     return best_score
 
-# result = minimax(gs,0)
-# final_state = result[1]
-# while final_state:
-#     final_state.output()
-#     final_state = final_state.parent
-
+ns = gs.get_bot_move()
+ns.output()
