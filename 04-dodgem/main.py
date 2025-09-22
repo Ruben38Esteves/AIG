@@ -4,6 +4,7 @@ import dodgem
 selected_car = None
 initial_board = {"B1":(0,0),"B2":(0,1),"R1":(1,2),"R2":(2,2)}
 game_state = dodgem.GameState(initial_board,"B")
+human_player = None
 
 
 def main():
@@ -11,11 +12,29 @@ def main():
     screen = pygame.display.set_mode((600, 600))
     pygame.display.set_caption("Dodgem")
 
+    blue_rect, red_rect = draw_menu(screen)
 
+    chosen_color = None
+
+    while not chosen_color:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                pos = event.pos
+                if blue_rect.collidepoint(pos):
+                    chosen_color = "B"
+                    break
+                elif red_rect.collidepoint(pos):
+                    chosen_color = "R"
+                    break
+
+    global human_player
+    human_player = chosen_color
+    draw_board(screen, game_state.board, selected_car)
     
-    draw_board(screen, game_state.board)
-    pygame.display.flip()
-    
+
     running = True
     while running:
         for event in pygame.event.get():
@@ -25,7 +44,6 @@ def main():
                 handle_mouse_click(event.pos, game_state.board)
                 
                 draw_board(screen, game_state.board, selected_car)
-                pygame.display.flip()
 
     pygame.quit()
 
@@ -72,20 +90,42 @@ def draw_board(screen, board, selected_car=None):
             y = move[1] * 200 + 50
             pygame.draw.ellipse(screen, (0, 255, 0), (x, y, 100, 100), 5)
 
+    pygame.display.flip()
+
 
 def handle_mouse_click(pos, board):
     x, y = pos
     col = x // 200
     row = y // 200
     for car, coord in board.items():
-        if coord == (col, row):
-            global selected_car
-            selected_car = car
-            return
+        if car[0] == human_player:
+            if coord == (col, row):
+                global selected_car
+                selected_car = car
+                return
 
 
     return None
 
+
+def draw_menu(screen):
+    screen.fill((255, 255, 255))
+    font = pygame.font.Font('freesansbold.ttf', 32)
+    text = font.render('Dodgem Game', True, (0, 0, 0))
+    text_rect = text.get_rect(center=(300, 150))
+    screen.blit(text, text_rect)
+
+    blue_text = font.render('Blue Player', True, (0, 0, 255))
+    blue_text_rect = blue_text.get_rect(center=(150, 400))
+    screen.blit(blue_text, blue_text_rect)
+    
+    red_text = font.render('Red Player', True, (255, 0, 0))
+    red_text_rect = red_text.get_rect(center=(450, 400))
+    screen.blit(red_text, red_text_rect)
+    
+    pygame.display.flip()
+
+    return blue_text_rect, red_text_rect
 
 
 
