@@ -104,6 +104,9 @@ class GameState:
     def __hash__(self):
         frozen_board = tuple(sorted(self.board.items()))
         return hash((frozen_board, self.current_player))
+    
+    def get_next_move(self):
+        return None
 
 
 
@@ -166,9 +169,9 @@ def minimax(gs: GameState, i: int, path=None, d = 0):
     vis_score[gs] = best_score[0]
     return best_score
 
-result = minimax(gs,0)
-final_state = result[1]
-while final_state:
-    final_state.output()
-    final_state = final_state.parent
+# result = minimax(gs,0)
+# final_state = result[1]
+# while final_state:
+#     final_state.output()
+#     final_state = final_state.parent
 
