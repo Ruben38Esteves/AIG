@@ -3,11 +3,14 @@ import dodgem
 
 selected_car = None
 initial_board = {"B1":(0,0),"B2":(0,1),"R1":(1,2),"R2":(2,2)}
-game_state = dodgem.GameState(initial_board,"B")
+game_state: dodgem.GameState = dodgem.GameState(initial_board,"B")
+possible_moves = None
 human_player = None
-
+player_turn = None
 
 def main():
+    global game_state
+    global player_turn
     pygame.init()
     screen = pygame.display.set_mode((600, 600))
     pygame.display.set_caption("Dodgem")
@@ -25,9 +28,11 @@ def main():
                 pos = event.pos
                 if blue_rect.collidepoint(pos):
                     chosen_color = "B"
+                    player_turn = True
                     break
                 elif red_rect.collidepoint(pos):
                     chosen_color = "R"
+                    player_turn = False
                     break
 
     global human_player
@@ -40,15 +45,21 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                handle_mouse_click(event.pos, game_state.board)
-                
-                draw_board(screen, game_state.board, selected_car)
+            else:
+                if player_turn:
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        handle_mouse_click(event.pos, game_state.board)
+                        draw_board(screen, game_state.board, selected_car)
+                else:
+                    game_state = game_state.get_bot_move()
+                    player_turn = not player_turn
+
 
     pygame.quit()
 
 
 def draw_board(screen, board, selected_car=None):
+    global possible_moves
     screen.fill((255, 255, 255))
 
     # draw horizontal lines
@@ -84,7 +95,6 @@ def draw_board(screen, board, selected_car=None):
     
     # Highlight possible moves for selected car
     if selected_car:
-        possible_moves = game_state.get_valid_moves(selected_car)
         for move in possible_moves:
             x = move[0] * 200 + 50
             y = move[1] * 200 + 50
@@ -94,15 +104,26 @@ def draw_board(screen, board, selected_car=None):
 
 
 def handle_mouse_click(pos, board):
+    global selected_car
+    global possible_moves
+    global game_state
+    global player_turn
     x, y = pos
     col = x // 200
     row = y // 200
     for car, coord in board.items():
         if car[0] == human_player:
             if coord == (col, row):
-                global selected_car
                 selected_car = car
+                possible_moves = game_state.get_valid_moves(selected_car)
                 return
+    if selected_car:
+        if (col, row) in possible_moves:
+            game_state = game_state.player_move(selected_car, (col,row))
+            selected_car = None
+            player_turn = not player_turn
+
+    
 
 
     return None

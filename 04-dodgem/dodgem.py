@@ -98,7 +98,7 @@ class GameState:
         score, best_state = self.minimax(self, 0, path, 0, vis_score)
         return best_state
 
-    def minimax(self, gs, i, path=None, d=0, vis_score=None):
+    def minimax(self, gs, i, path=None, d=0, vis_score=None, depth=0):
         if path is None:
             path = set()
         if vis_score is None:
@@ -119,16 +119,23 @@ class GameState:
             path.remove(gs)
             return (score, gs)
 
+        if depth > 5:
+            score = self.get_score()
+            score = score-d if score > 0 else score+d
+            vis_score[gs] = score
+            path.remove(gs)
+            return (score, gs)
+
         if gs.current_player == "B":  # maximizing
             best_score = (-999, None)
             for ss in gs.get_substates():
-                candidate = self.minimax(ss, i+1, path, d+1, vis_score)
+                candidate = self.minimax(ss, i+1, path, d+1, vis_score,depth+1)
                 if candidate[0] > best_score[0]:
                     best_score = (candidate[0], ss)
         else:  # minimizing
             best_score = (999, None)
             for ss in gs.get_substates():
-                candidate = self.minimax(ss, i+1, path, d+1, vis_score)
+                candidate = self.minimax(ss, i+1, path, d+1, vis_score,depth+1)
                 if candidate[0] < best_score[0]:
                     best_score = (candidate[0], ss)
 
@@ -158,13 +165,13 @@ class GameState:
     def get_score(self):
         score = 0
         if self.board["B1"] == (-1,-1):
-            score += 1
+            score += 10
         if self.board["B2"] == (-1,-1):
-            score += 1
+            score += 10
         if self.board["R1"] == (-1,-1):
-            score -= 1
+            score -= 10
         if self.board["R2"] == (-1,-1):
-            score -= 1
+            score -= 10
         return score
 
     def is_game_over(self):
