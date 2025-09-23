@@ -83,7 +83,7 @@ class GameState:
             directions = [(-1,0), (1,0), (0,-1)]
             for d in directions:
                 new_coords = (car_coords[0]+d[0],car_coords[1]+d[1])
-                if new_coords[0] < -1 or new_coords[0] > 2 or new_coords[1] < 0 or new_coords[1] > 2:
+                if new_coords[0] < 0 or new_coords[0] > 2 or new_coords[1] < -1 or new_coords[1] > 2:
                     continue
                 if not self.is_tile_free(new_coords):
                     continue
