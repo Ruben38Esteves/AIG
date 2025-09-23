@@ -132,6 +132,8 @@ class GameState:
 
     def player_move(self, car, coord):
        new_board = self.board.copy()
+       if coord[0] > 2 or coord[1] < 0:
+           coord = (-1,-1)
        new_board[car] = coord
        next_player: str = "R" if self.current_player == "B" else "B"
        return GameState(new_board, next_player, self)
