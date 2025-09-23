@@ -7,12 +7,14 @@ game_state: dodgem.GameState = dodgem.GameState(initial_board,"B")
 possible_moves = None
 human_player = None
 player_turn = None
+x_start = 200
+y_start = 200
 
 def main():
     global game_state
     global player_turn
     pygame.init()
-    screen = pygame.display.set_mode((600, 600))
+    screen = pygame.display.set_mode((800, 800))
     pygame.display.set_caption("Dodgem")
 
     blue_rect, red_rect = draw_menu(screen)
@@ -53,6 +55,7 @@ def main():
                 else:
                     game_state = game_state.get_bot_move()
                     player_turn = not player_turn
+                    draw_board(screen, game_state.board, selected_car)
 
 
     pygame.quit()
@@ -63,16 +66,16 @@ def draw_board(screen, board, selected_car=None):
     screen.fill((255, 255, 255))
 
     # draw horizontal lines
-    pygame.draw.line(screen, (0, 0, 0), (0, 1), (600, 1), 4)
-    pygame.draw.line(screen, (0, 0, 0), (0, 200), (600, 200), 4)
-    pygame.draw.line(screen, (0, 0, 0), (0, 400), (600, 400), 4)
-    pygame.draw.line(screen, (0, 0, 0), (0, 597), (600, 597), 4)
+    pygame.draw.line(screen, (0, 0, 0), (0, 1 + y_start), (600, 1 + y_start), 4)
+    pygame.draw.line(screen, (0, 0, 0), (0, 200 + y_start), (600, 200 + y_start), 4)
+    pygame.draw.line(screen, (0, 0, 0), (0, 400 + y_start), (600, 400 + y_start), 4)
+    pygame.draw.line(screen, (0, 0, 0), (0, 597 + y_start), (600, 597 + y_start), 4)
 
     # draw vertical lines
-    pygame.draw.line(screen, (0, 0, 0), (0, 0), (0, 600), 4)
-    pygame.draw.line(screen, (0, 0, 0), (200, 0), (200, 600), 4)
-    pygame.draw.line(screen, (0, 0, 0), (400, 0), (400, 600), 4)
-    pygame.draw.line(screen, (0, 0, 0), (597, 0), (597, 600), 4)
+    pygame.draw.line(screen, (0, 0, 0), (0, 0 + y_start), (0, 600 + y_start), 4)
+    pygame.draw.line(screen, (0, 0, 0), (200, 0 + y_start), (200, 600 + y_start), 4)
+    pygame.draw.line(screen, (0, 0, 0), (400, 0 + y_start), (400, 600 + y_start), 4)
+    pygame.draw.line(screen, (0, 0, 0), (597, 0 + y_start), (597, 600 + y_start), 4)
 
     for car, coord in board.items():
         if coord == (-1, -1):
@@ -80,13 +83,13 @@ def draw_board(screen, board, selected_car=None):
         if car.startswith("B"):
             color = (0, 0, 255)
             x = coord[0] * 200 + 25
-            y = coord[1] * 200 + 50
+            y = coord[1] * 200 + 50 + y_start
             rect = pygame.Rect(x, y, 150, 100)
             pygame.draw.ellipse(screen, color, rect)
         else:
             color = (255, 0, 0)
             x = coord[0] * 200 + 50
-            y = coord[1] * 200 + 25
+            y = coord[1] * 200 + 25 + y_start
             rect = pygame.Rect(x, y, 100, 150)
             pygame.draw.ellipse(screen, color, rect)
 
@@ -97,7 +100,7 @@ def draw_board(screen, board, selected_car=None):
     if selected_car:
         for move in possible_moves:
             x = move[0] * 200 + 50
-            y = move[1] * 200 + 50
+            y = move[1] * 200 + 50 + y_start
             pygame.draw.ellipse(screen, (0, 255, 0), (x, y, 100, 100), 5)
 
     pygame.display.flip()
@@ -109,6 +112,8 @@ def handle_mouse_click(pos, board):
     global game_state
     global player_turn
     x, y = pos
+    x = x
+    y = y - y_start
     col = x // 200
     row = y // 200
     for car, coord in board.items():
@@ -133,15 +138,15 @@ def draw_menu(screen):
     screen.fill((255, 255, 255))
     font = pygame.font.Font('freesansbold.ttf', 32)
     text = font.render('Dodgem Game', True, (0, 0, 0))
-    text_rect = text.get_rect(center=(300, 150))
+    text_rect = text.get_rect(center=(400, 250))
     screen.blit(text, text_rect)
 
     blue_text = font.render('Blue Player', True, (0, 0, 255))
-    blue_text_rect = blue_text.get_rect(center=(150, 400))
+    blue_text_rect = blue_text.get_rect(center=(250, 500))
     screen.blit(blue_text, blue_text_rect)
     
     red_text = font.render('Red Player', True, (255, 0, 0))
-    red_text_rect = red_text.get_rect(center=(450, 400))
+    red_text_rect = red_text.get_rect(center=(550, 500))
     screen.blit(red_text, red_text_rect)
     
     pygame.display.flip()

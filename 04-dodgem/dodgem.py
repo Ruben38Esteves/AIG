@@ -193,10 +193,10 @@ class GameState:
 
 
 
-inital_board = [["B","",""],["B","",""],["","R","R"]]
-ib = {"B1":(2,0),"B2":(0,1),"R1":(1,2),"R2":(2,2)}
-gs = GameState(ib,"B")
-gs.output()
+# inital_board = [["B","",""],["B","",""],["","R","R"]]
+# ib = {"B1":(2,0),"B2":(0,1),"R1":(1,2),"R2":(2,2)}
+# gs = GameState(ib,"B")
+# gs.output()
 
 visited = set()
 
@@ -215,7 +215,7 @@ def print_tree(gs: GameState, indentation: int, depth: int):
 
 
 vis_score = {}
-def minimaxaaaa(gs: GameState, i: int, path=None, d = 0):
+def minimax(gs: GameState, i: int, path=None, d = 0):
     if path is None:
         path = set()
     if gs in path:            # cycle detected
@@ -253,5 +253,5 @@ def minimaxaaaa(gs: GameState, i: int, path=None, d = 0):
     vis_score[gs] = best_score[0]
     return best_score
 
-ns = gs.get_bot_move()
-ns.output()
+# ns = gs.get_bot_move()
+# ns.output()
