@@ -71,7 +71,7 @@ class GameState:
             directions = [(1,0), (0,-1), (0,1)]
             for d in directions:
                 new_coords = (car_coords[0]+d[0],car_coords[1]+d[1])
-                if new_coords[0] < 0 or new_coords[0] > 2 or new_coords[1] < 0 or new_coords[1] > 2:
+                if new_coords[0] < 0 or new_coords[0] > 3 or new_coords[1] < 0 or new_coords[1] > 2:
                     continue
                 if not self.is_tile_free(new_coords):
                     continue
@@ -83,7 +83,7 @@ class GameState:
             directions = [(-1,0), (1,0), (0,-1)]
             for d in directions:
                 new_coords = (car_coords[0]+d[0],car_coords[1]+d[1])
-                if new_coords[0] < 0 or new_coords[0] > 2 or new_coords[1] < 0 or new_coords[1] > 2:
+                if new_coords[0] < -1 or new_coords[0] > 2 or new_coords[1] < 0 or new_coords[1] > 2:
                     continue
                 if not self.is_tile_free(new_coords):
                     continue
@@ -94,53 +94,40 @@ class GameState:
 
     def get_bot_move(self):
         vis_score = {}
-        path = set()
-        score, best_state = self.minimax(self, 0, path, 0, vis_score)
+        score, best_state = self.minimax(self, 0, 0, vis_score)
         return best_state
 
-    def minimax(self, gs, i, path=None, d=0, vis_score=None, depth=0):
-        if path is None:
-            path = set()
-        if vis_score is None:
-            vis_score = {}
-
-        if gs in path:  # cycle detected
-            return (0, gs)
-        path.add(gs)
+    def minimax(self, gs, i, d=0, vis_score=None):
 
         if gs in vis_score:
-            path.remove(gs)
             return (vis_score[gs], gs)
 
         result = gs.is_game_over()
         if result[0]:
             score = result[1]-d if result[1] > 0 else result[1]+d
             vis_score[gs] = score
-            path.remove(gs)
             return (score, gs)
 
-        if depth > 5:
+        if d > 5:
             score = self.get_score()
             score = score-d if score > 0 else score+d
             vis_score[gs] = score
-            path.remove(gs)
             return (score, gs)
 
         if gs.current_player == "B":  # maximizing
             best_score = (-999, None)
             for ss in gs.get_substates():
-                candidate = self.minimax(ss, i+1, path, d+1, vis_score,depth+1)
+                candidate = self.minimax(ss, i+1, d+1, vis_score)
                 if candidate[0] > best_score[0]:
                     best_score = (candidate[0], ss)
         else:  # minimizing
             best_score = (999, None)
             for ss in gs.get_substates():
-                candidate = self.minimax(ss, i+1, path, d+1, vis_score,depth+1)
+                candidate = self.minimax(ss, i+1, d+1, vis_score)
                 if candidate[0] < best_score[0]:
                     best_score = (candidate[0], ss)
 
         vis_score[gs] = best_score[0]
-        path.remove(gs)
         return best_score
 
     def player_move(self, car, coord):
@@ -190,71 +177,4 @@ class GameState:
     def __hash__(self):
         frozen_board = tuple(sorted(self.board.items()))
         return hash((frozen_board, self.current_player))
-    
-    def get_next_move(self):
-        return None
 
-
-
-inital_board = [["B","",""],["B","",""],["","R","R"]]
-ib = {"B1":(2,0),"B2":(0,1),"R1":(1,2),"R2":(2,2)}
-gs = GameState(ib,"B")
-gs.output()
-
-visited = set()
-
-def print_tree(gs: GameState, indentation: int, depth: int):
-    visited.add(gs)
-    gs.output(indentation)
-    result = gs.is_game_over()
-    if result[0]:
-        return
-    #if depth > 10:
-    #    return
-    for ss in gs.get_substates():
-        if ss in visited:
-            continue
-        print_tree(ss, indentation+1, depth+1)
-
-
-vis_score = {}
-def minimaxaaaa(gs: GameState, i: int, path=None, d = 0):
-    if path is None:
-        path = set()
-    if gs in path:            # cycle detected
-        return (0, gs)        # or a neutral value
-    path.add(gs)
-
-    if gs in vis_score.keys():
-        path.remove(gs)
-        return (vis_score[gs], gs)
-
-    result = gs.is_game_over()
-    if result[0]:
-        if gs not in vis_score.keys():
-            vis_score[gs] = result[1]
-        if result[1] > 0:
-            return(result[1]-d, gs)
-        else:
-            return(result[1]+d, gs)
-
-    if gs.current_player == "B":
-        best_score = (-99, None)
-        for ss in gs.get_substates():
-            winner = minimax(ss, i+1,path, d+1)
-            if winner[0] > best_score[0]:
-                best_score = winner
-    else:
-        best_score = (99, None)
-        for ss in gs.get_substates():
-            winner = minimax(ss, i+1,path, d+1)
-            if winner[0] < best_score[0]:
-                best_score = winner
-
-
-    path.remove(gs)
-    vis_score[gs] = best_score[0]
-    return best_score
-
-ns = gs.get_bot_move()
-ns.output()
