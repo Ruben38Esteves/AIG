@@ -7,7 +7,6 @@ game_state: dodgem.GameState = dodgem.GameState(initial_board,"B")
 possible_moves = None
 human_player = None
 player_turn = None
-x_start = 200
 y_start = 200
 
 def main():
@@ -48,6 +47,16 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             else:
+                if game_state.is_game_over()[0]:
+                    winner = game_state.is_game_over()[1]
+                    if winner == 0:
+                        draw_game_over(screen, "Draw")
+                    elif winner > 0:
+                        draw_game_over(screen, "Blue Player")
+                    else:
+                        draw_game_over(screen, "Red Player")
+                    running = False
+                    break
                 if player_turn:
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         handle_mouse_click(event.pos, game_state.board)
@@ -112,7 +121,6 @@ def handle_mouse_click(pos, board):
     global game_state
     global player_turn
     x, y = pos
-    x = x
     y = y - y_start
     col = x // 200
     row = y // 200
@@ -128,19 +136,15 @@ def handle_mouse_click(pos, board):
             selected_car = None
             player_turn = not player_turn
 
-    
-
-
-    return None
-
 
 def draw_menu(screen):
     screen.fill((255, 255, 255))
-    font = pygame.font.Font('freesansbold.ttf', 32)
+    font = pygame.font.Font('freesansbold.ttf', 64)
     text = font.render('Dodgem Game', True, (0, 0, 0))
     text_rect = text.get_rect(center=(400, 250))
     screen.blit(text, text_rect)
 
+    font = pygame.font.Font('freesansbold.ttf', 32)
     blue_text = font.render('Blue Player', True, (0, 0, 255))
     blue_text_rect = blue_text.get_rect(center=(250, 500))
     screen.blit(blue_text, blue_text_rect)
@@ -152,6 +156,24 @@ def draw_menu(screen):
     pygame.display.flip()
 
     return blue_text_rect, red_text_rect
+
+def draw_game_over(screen, winner):
+    screen.fill((255, 255, 255))
+    font = pygame.font.Font('freesansbold.ttf', 64)
+    text = font.render('Game Over!', True, (0, 0, 0))
+    text_rect = text.get_rect(center=(400, 300))
+    screen.blit(text, text_rect)
+    
+    font = pygame.font.Font('freesansbold.ttf', 32)
+
+    if winner == "Draw":
+        text = font.render('It\'s a Draw!', True, (0, 0, 0))
+    else:
+        text = font.render(f'{winner} Wins!', True, (0, 0, 0))
+    text_rect = text.get_rect(center=(400, 400))
+    screen.blit(text, text_rect)
+    pygame.display.flip()
+    pygame.time.delay(3000)
 
 
 

@@ -79,33 +79,30 @@ class GameState:
 
         result = gs.is_game_over()
         if result[0]:
-            score = result[1]
-            if gs.current_player == "B":
-                score = score
-            else:
-                score = score
+            score = result[1] 
             vis_score[gs] = score
             return (score, gs)
 
-        if d >= 7:
+        if d > 20:
             score = self.get_score()
-            if gs.current_player == "B":
-                score = score - d
-            else:
-                score = score + d
+            score = score if score > 0 else score
             vis_score[gs] = score
-            return (score, gs)
+            return (score, None)
 
         if gs.current_player == "B":  # maximizing
             best_score = (-999, None)
             for ss in gs.get_substates():
                 candidate = self.minimax(ss, i+1, d+1, vis_score)
+                if candidate[1] is None:
+                    continue
                 if candidate[0] > best_score[0]:
                     best_score = (candidate[0], ss)
         else:  # minimizing
             best_score = (999, None)
             for ss in gs.get_substates():
                 candidate = self.minimax(ss, i+1, d+1, vis_score)
+                if candidate[1] is None:
+                    continue
                 if candidate[0] < best_score[0]:
                     best_score = (candidate[0], ss)
 
@@ -181,4 +178,5 @@ class GameState:
     def __hash__(self):
         frozen_board = tuple(sorted(self.board.items()))
         return hash((frozen_board, self.current_player))
+
 
