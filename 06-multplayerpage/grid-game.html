@@ -82,6 +82,7 @@
   <script src="https://cdn.jsdelivr.net/npm/three@0.118.3/examples/js/controls/OrbitControls.js"></script>
 
   <script>
+    // three js boilerplate
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xf0f0f0);
 
@@ -95,15 +96,15 @@
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.target.set(0, 0, 0);
     controls.update();
-
+    // lightning
     scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.8));
     const dir = new THREE.DirectionalLight(0xffffff, 0.8);
     dir.position.set(5, 10, 7);
     scene.add(dir);
-
+    // grid
     const grid = new THREE.GridHelper(20, 20, 0x888888, 0xcccccc);
     scene.add(grid);
-
+    // plane to be drawn upon
     const plane = new THREE.Mesh(
       new THREE.PlaneGeometry(20, 20),
       new THREE.MeshBasicMaterial({visible: false})
@@ -130,6 +131,7 @@
       pointer.y = -(e.clientY / innerHeight) * 2 + 1;
       raycaster.setFromCamera(pointer, camera);
 
+      // delete cube, to be implemented later
       if (e.shiftKey) {
         const hits = raycaster.intersectObjects([...occupied.values()]);
         if (hits.length > 0) removeCube(hits[0].object);
